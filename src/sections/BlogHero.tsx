@@ -110,15 +110,6 @@ export default function BlogHero() {
             </div>
           </div>
 
-          <div className="relative h-56 w-full sm:h-full sm:w-72 sm:shrink-0 lg:w-96">
-            <Image
-              src="/team-member-2.png"
-              alt=""
-              fill
-              className="object-cover"
-              sizes="(max-width:640px) 100vw, 384px"
-            />
-          </div>
         </motion.div>
         </Container>
       </section>
