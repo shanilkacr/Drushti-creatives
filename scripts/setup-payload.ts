@@ -9,6 +9,19 @@ const rootDir = path.resolve(__dirname, "..");
 const envPath = path.join(rootDir, ".env");
 const envExamplePath = path.join(rootDir, ".env.example");
 
+function runCommand(args: string[]) {
+  const result = spawnSync("npm", args, {
+    cwd: rootDir,
+    stdio: "inherit",
+    env: process.env,
+    shell: true,
+  });
+
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
+}
+
 function ensureEnvFile() {
   if (fs.existsSync(envPath)) {
     console.log(".env already exists — skipping copy from .env.example.");
@@ -22,25 +35,9 @@ function ensureEnvFile() {
 
   fs.copyFileSync(envExamplePath, envPath);
   console.log("Created .env from .env.example.");
-  console.log("Review PAYLOAD_SEED_PASSWORD in .env before sharing credentials.");
-}
-
-function runSeed() {
-  const result = spawnSync(
-    "npx",
-    ["tsx", "scripts/seed-portfolio.ts"],
-    {
-      cwd: rootDir,
-      stdio: "inherit",
-      env: process.env,
-      shell: true,
-    },
-  );
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
+  console.log("Fill in DATABASE_URL, R2_*, and PAYLOAD_SECRET before continuing.");
 }
 
 ensureEnvFile();
-runSeed();
+runCommand(["run", "migrate"]);
+runCommand(["run", "seed"]);

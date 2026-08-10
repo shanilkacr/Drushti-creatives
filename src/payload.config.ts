@@ -1,7 +1,8 @@
 import path from "path";
 import { fileURLToPath } from "url";
-import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -14,6 +15,8 @@ import { Users } from "./collections/Users";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const r2PublicUrl = process.env.R2_PUBLIC_URL?.replace(/\/$/, "") ?? "";
 
 export default buildConfig({
   admin: {
@@ -28,11 +31,35 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URL || "file:./payload.db",
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URL,
     },
     push: false,
   }),
+  plugins: [
+    s3Storage({
+      enabled: Boolean(process.env.R2_BUCKET),
+      collections: {
+        media: {
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename, prefix }) => {
+            const key = prefix ? `${prefix}/${filename}` : filename;
+            return `${r2PublicUrl}/${key}`;
+          },
+        },
+      },
+      bucket: process.env.R2_BUCKET ?? "",
+      config: {
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID ?? "",
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? "",
+        },
+        region: "auto",
+        endpoint: process.env.R2_ENDPOINT,
+        forcePathStyle: true,
+      },
+    }),
+  ],
   sharp,
 });

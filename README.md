@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project with [Payload CMS](https://payloadcms.com) for portfolio, clients, and team content.
 
+Production uses **Supabase Postgres** for the database, **Cloudflare R2** for media uploads, and **Vercel** for hosting the site and admin.
+
 ## Getting Started
 
 ### 1. Install dependencies
@@ -8,11 +10,18 @@ This is a [Next.js](https://nextjs.org) project with [Payload CMS](https://paylo
 npm install
 ```
 
-### 2. Set up Payload (database + admin users + content)
+### 2. Environment variables
 
-Payload stores CMS data in a local SQLite file (`payload.db`) and uploaded media in `media/`. Both are gitignored, so each developer needs to initialize them locally.
+Copy `.env.example` to `.env` and fill in:
 
-Run the setup script after cloning:
+- `DATABASE_URL` — Supabase **transaction pooler** URL (port 6543)
+- `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `CONTENT_PROVIDER=payload`
+- `PAYLOAD_SEED_PASSWORD` — for seeding admin users (not stored in git)
+- `R2_BUCKET`, `R2_ENDPOINT`, `R2_PUBLIC_URL`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
+
+### 3. Set up database and content
+
+After cloning, run:
 
 ```bash
 npm run setup
@@ -21,8 +30,9 @@ npm run setup
 This will:
 
 1. Copy `.env.example` → `.env` if you don't have one yet
-2. Seed admin users from `data/payload/seed-users.json`
-3. Seed portfolio, clients, and team content from `src/data/static*.ts`
+2. Run `npm run migrate` against Supabase
+3. Seed admin users from `data/payload/seed-users.json`
+4. Seed portfolio, clients, and team from `src/data/static*.ts` (uploads go to R2)
 
 Then start the dev server:
 
@@ -41,29 +51,40 @@ Log in with an email from `data/payload/seed-users.json` and the password from `
 2. Commit and push that file
 3. Teammates run `npm run seed` (or `npm run setup` on first clone)
 
-Passwords are **not** stored in git. Everyone uses the shared dev password from `PAYLOAD_SEED_PASSWORD` in `.env` (set your own locally; `.env.example` shows the default).
+Passwords are **not** stored in git. Everyone uses the shared dev password from `PAYLOAD_SEED_PASSWORD` in `.env`.
 
-### Updating CMS content for everyone
+### Updating CMS content
 
-Portfolio, client, and team seed data lives in:
+With Supabase + R2, edits in the **Payload admin** are live for everyone on the same database. No need to re-export static files for production.
+
+Optional: run `npm run export-cms` to sync CMS data back into `src/data/static*.ts` for git backup or static fallback.
+
+Static seed sources (used by `npm run seed`):
 
 - `src/data/staticProjects.ts`
 - `src/data/staticClients.ts`
 - `src/data/staticTeam.ts`
-
-After editing those files, run `npm run seed` and commit the changes. Teammates pull and run `npm run seed` to sync their local database.
-
-If you edit content directly in the Payload admin UI, those changes stay in your local `payload.db` only. To share them, update the corresponding `src/data/static*.ts` files (or ask to add an export workflow).
 
 ## Scripts
 
 | Command | Description |
 | --- | --- |
 | `npm run dev` | Start Next.js dev server |
-| `npm run setup` | First-time Payload setup (`.env` + seed) |
+| `npm run setup` | Migrate + seed (first-time setup) |
+| `npm run migrate` | Apply Payload DB migrations to Supabase |
+| `npm run migrate:create` | Create a new migration after schema changes |
 | `npm run seed` | Re-seed users and CMS content |
+| `npm run export-cms` | Export CMS → static `src/data/static*.ts` (optional) |
+| `npm run migrate-tags` | **Legacy** — SQLite-only one-time tag migration; do not use on Supabase |
 | `npm run generate:types` | Regenerate Payload TypeScript types |
 
 ## Deploy on Vercel
 
-See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying). For production, use a hosted database (Postgres) instead of the local SQLite file and set `DATABASE_URL`, `PAYLOAD_SECRET`, and `NEXT_PUBLIC_SERVER_URL` in your hosting environment.
+1. Connect the repo and set the same env vars as `.env.example` (use production `NEXT_PUBLIC_SERVER_URL`).
+2. Use the Supabase **pooler** connection string for `DATABASE_URL`.
+3. `npm run build` runs migrations then `next build` automatically.
+4. After deploy, verify `/admin` login and a test media upload (check R2 bucket).
+
+If a private GitHub **organization** repo blocks Vercel Hobby Git deploys, use GitHub Actions with the Vercel CLI or upgrade to Vercel Pro.
+
+See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).

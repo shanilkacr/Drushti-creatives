@@ -5,6 +5,9 @@
  * collection with portfolio relationship links.
  *
  * Usage:  npm run migrate-tags
+ *
+ * Legacy: requires a local SQLite payload.db and the sqlite3 CLI.
+ * Do not run against Supabase/Postgres — use only for old SQLite databases.
  */
 
 import "dotenv/config";
