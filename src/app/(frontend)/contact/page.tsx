@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type FormEvent, type SVGProps } from "react";
+import { useState, useRef, type FormEvent, type ReactElement, type SVGProps } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import PillButton from "@/components/PillButton";
 
@@ -100,7 +100,7 @@ function FloatingIcon({
   color,
   btnVariant,
 }: {
-  Icon: (p: SVGProps<SVGSVGElement>) => JSX.Element;
+  Icon: (p: SVGProps<SVGSVGElement>) => ReactElement;
   top: string;
   left: string;
   size: number;

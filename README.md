@@ -81,9 +81,10 @@ Static seed sources (used by `npm run seed`):
 ## Deploy on Vercel
 
 1. Connect the repo and set the same env vars as `.env.example` (use production `NEXT_PUBLIC_SERVER_URL`).
-2. Use the Supabase **pooler** connection string for `DATABASE_URL`.
-3. `npm run build` runs migrations then `next build` automatically.
-4. After deploy, verify `/admin` login and a test media upload (check R2 bucket).
+2. Use the Supabase **transaction pooler** connection string for `DATABASE_URL` (port **6543**, not direct `:5432`).
+3. Set **all** `R2_*` variables on Vercel (Production + Preview) so the admin import map and uploads work at build time and runtime.
+4. `npm run build` runs `generate:importmap`, migrations, then `next build`.
+5. After deploy, verify `/admin` login and a test media upload (check R2 bucket).
 
 If a private GitHub **organization** repo blocks Vercel Hobby Git deploys, use GitHub Actions with the Vercel CLI or upgrade to Vercel Pro.
 
