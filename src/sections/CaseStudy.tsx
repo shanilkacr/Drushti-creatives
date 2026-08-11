@@ -11,7 +11,7 @@ export default function CaseStudy({ project }: { project: Project }) {
   const galleryImages = [project.featuredImage, ...project.images].filter(Boolean);
 
   return (
-    <section className="bg-cream py-16 sm:py-24">
+    <section className="bg-cream py-24 sm:py-32">
       <Container>
         <motion.div {...fadeUp()} className="mb-8">
           <Link
