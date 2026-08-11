@@ -37,7 +37,13 @@ function LinkedInIcon() {
   );
 }
 
-function TeamCard({ member }: { member: TeamCardMember }) {
+function TeamCard({
+  member,
+  className = "",
+}: {
+  member: TeamCardMember;
+  className?: string;
+}) {
   const prefersReducedMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -75,7 +81,7 @@ function TeamCard({ member }: { member: TeamCardMember }) {
   }, [prefersReducedMotion, px, py]);
 
   return (
-    <div ref={cardRef} className="relative w-48 sm:w-56">
+    <div ref={cardRef} className={`relative w-full max-w-48 sm:w-56 ${className}`}>
       {/* The ENTIRE card wobbles as one unit — photo, blurred glow, and
           the name/role/LinkedIn text block below it. Mouse listeners stay
           on the outer, untransformed cardRef div above — if they lived on
@@ -111,8 +117,9 @@ function TeamCard({ member }: { member: TeamCardMember }) {
 
 /** Team section, split by breakpoint:
  *  - below md: heading + CTA sit at the top of the section in normal flow
- *    (no pinning). Below them, every member appears in a single column,
- *    one after another, each fading/sliding in as it scrolls into view.
+ *    (no pinning). Below them, members sit in a 2-column grid — pairs
+ *    side by side, with a trailing odd member centered alone on its own
+ *    row — each fading/sliding in as it scrolls into view.
  *  - md and up: the original pinned dark screen with a centered heading +
  *    CTA, while two columns of member cards float up past it, driven by
  *    scroll (unchanged).
@@ -138,9 +145,13 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
   const leftY = useTransform(scrollYProgress, [0, 1], ["14vh", "-90vh"]);
   const rightY = useTransform(scrollYProgress, [0, 1], ["22vh", "-50vh"]);
 
+  // Whether this member's row has a partner — the last member in an odd-
+  // sized team has none, so it gets centered and spans both grid columns.
+  const isLastOdd = (index: number) => team.length % 2 === 1 && index === team.length - 1;
+
   return (
     <section ref={sectionRef} className="relative bg-blue">
-      {/* Below md: heading at top, cards in one column, one after another */}
+      {/* Below md: heading at top, members in a 2-up grid */}
       <div className="px-6 py-24 sm:py-32 md:hidden">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-6 text-center">
           <h1 className="max-w-xs font-heading text-heading-hero-half leading-heading-display tracking-tight text-white">
@@ -158,14 +169,15 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
           </motion.div>
         </div>
 
-        <div className="mx-auto mt-16 flex max-w-xs flex-col items-center gap-12">
+        <div className="mx-auto mt-16 grid max-w-sm grid-cols-2 place-items-center gap-x-4 gap-y-10">
           {team.map((member, index) => (
             <motion.div
               key={member.name}
+              className={isLastOdd(index) ? "col-span-2" : undefined}
               initial={prefersReducedMotion ? undefined : { opacity: 0, y: 48 }}
               whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.6, ease: EASE, delay: index * 0.05 }}
+              transition={{ duration: 0.6, ease: EASE, delay: (index % 2) * 0.1 }}
             >
               <TeamCard member={member} />
             </motion.div>
