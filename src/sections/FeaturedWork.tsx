@@ -74,7 +74,7 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
       className="relative bg-white"
       style={{ height: `${count * perProjectVh}vh` }}
     >
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden pt-28 pb-10 sm:py-20">
+      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24 sm:py-32">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
