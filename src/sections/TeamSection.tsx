@@ -76,12 +76,12 @@ function TeamCard({ member }: { member: TeamCardMember }) {
 
   return (
     <div ref={cardRef} className="relative w-48 sm:w-56">
-      {/* The ENTIRE card now wobbles as one unit — photo, blurred glow,
-          corner brackets, and the name/role/LinkedIn text block below it.
-          Mouse listeners stay on the outer, untransformed cardRef div
-          above — if they lived on this moving element instead, its own
-          motion would keep shifting the getBoundingClientRect() used to
-          calculate the pointer offset, feeding back into itself. */}
+      {/* The ENTIRE card wobbles as one unit — photo, blurred glow, and
+          the name/role/LinkedIn text block below it. Mouse listeners stay
+          on the outer, untransformed cardRef div above — if they lived on
+          this moving element instead, its own motion would keep shifting
+          the getBoundingClientRect() used to calculate the pointer offset,
+          feeding back into itself. */}
       <motion.div
         style={
           prefersReducedMotion
@@ -109,9 +109,14 @@ function TeamCard({ member }: { member: TeamCardMember }) {
   );
 }
 
-/** Team section traced from the reference: pinned dark screen with centered
- *  heading + CTA, while two columns of member cards float up past it on the
- *  left and right edges, driven by scroll. */
+/** Team section, split by breakpoint:
+ *  - below md: heading + CTA sit at the top of the section in normal flow
+ *    (no pinning). Below them, every member appears in a single column,
+ *    one after another, each fading/sliding in as it scrolls into view.
+ *  - md and up: the original pinned dark screen with a centered heading +
+ *    CTA, while two columns of member cards float up past it, driven by
+ *    scroll (unchanged).
+ */
 export default function TeamSection({ members }: { members: TeamMember[] }) {
   const team = withFrameColors(members);
   const leftColumn = team.filter((_, index) => index % 2 === 0);
@@ -134,11 +139,11 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
   const rightY = useTransform(scrollYProgress, [0, 1], ["22vh", "-50vh"]);
 
   return (
-    <section ref={sectionRef} className="relative h-[150vh] bg-blue">
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
-        {/* Pinned center content */}
-        <div className="relative z-20 flex flex-col items-center gap-6 px-6 text-center">
-          <h1 className="max-w-xs sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl font-heading text-heading-hero-half leading-heading-display tracking-tight text-white">
+    <section ref={sectionRef} className="relative bg-blue">
+      {/* Below md: heading at top, cards in one column, one after another */}
+      <div className="px-6 py-24 sm:py-32 md:hidden">
+        <div className="mx-auto flex max-w-xl flex-col items-center gap-6 text-center">
+          <h1 className="max-w-xs font-heading text-heading-hero-half leading-heading-display tracking-tight text-white">
             We build the voice your vision deserves.
           </h1>
           <motion.div
@@ -153,34 +158,70 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
           </motion.div>
         </div>
 
-        {prefersReducedMotion ? (
-          /* Static fallback: simple grid under the heading */
-          <div className="absolute inset-x-0 bottom-8 z-20 flex flex-wrap justify-center gap-6 px-6">
-            {team.slice(0, 3).map((member) => (
-              <TeamCard key={member.name} member={member} />
-            ))}
+        <div className="mx-auto mt-16 flex max-w-xs flex-col items-center gap-12">
+          {team.map((member, index) => (
+            <motion.div
+              key={member.name}
+              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 48 }}
+              whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, ease: EASE, delay: index * 0.05 }}
+            >
+              <TeamCard member={member} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* md and up: original pinned scroll-parallax layout, unchanged */}
+      <div className="relative hidden h-[150vh] md:block">
+        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+          {/* Pinned center content */}
+          <div className="relative z-20 flex flex-col items-center gap-6 px-6 text-center">
+            <h1 className="max-w-md font-heading text-heading-hero-half leading-heading-display tracking-tight text-white lg:max-w-3xl xl:max-w-4xl">
+              We build the voice your vision deserves.
+            </h1>
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+            >
+              <PillButton href="#contact" variant="onColor">
+                Meet team
+              </PillButton>
+            </motion.div>
           </div>
-        ) : (
-          <>
-            {/* Cards float up past the pinned heading, in front of it */}
-            <motion.div
-              style={{ y: leftY }}
-              className="absolute left-[2%] top-0 z-10 flex flex-col gap-[26vh] sm:left-[3%] md:left-[4%] xl:left-[6%]"
-            >
-              {leftColumn.map((member) => (
+
+          {prefersReducedMotion ? (
+            /* Static fallback: simple grid under the heading */
+            <div className="absolute inset-x-0 bottom-8 z-20 flex flex-wrap justify-center gap-6 px-6">
+              {team.slice(0, 3).map((member) => (
                 <TeamCard key={member.name} member={member} />
               ))}
-            </motion.div>
-            <motion.div
-              style={{ y: rightY }}
-              className="absolute right-[2%] top-0 z-10 flex flex-col gap-[26vh] sm:right-[3%] md:right-[4%] xl:right-[6%]"
-            >
-              {rightColumn.map((member) => (
-                <TeamCard key={member.name} member={member} />
-              ))}
-            </motion.div>
-          </>
-        )}
+            </div>
+          ) : (
+            <>
+              {/* Cards float up past the pinned heading, in front of it */}
+              <motion.div
+                style={{ y: leftY }}
+                className="absolute left-[3%] top-0 z-10 flex flex-col gap-[26vh] md:left-[4%] xl:left-[6%]"
+              >
+                {leftColumn.map((member) => (
+                  <TeamCard key={member.name} member={member} />
+                ))}
+              </motion.div>
+              <motion.div
+                style={{ y: rightY }}
+                className="absolute right-[3%] top-0 z-10 flex flex-col gap-[26vh] md:right-[4%] xl:right-[6%]"
+              >
+                {rightColumn.map((member) => (
+                  <TeamCard key={member.name} member={member} />
+                ))}
+              </motion.div>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
