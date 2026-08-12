@@ -56,9 +56,10 @@ function buildFanOffsets(count: number, cardWidth: number): Offset[] {
   });
 }
 
-function stackZIndex(index: number, count: number) {
+function stackZIndex(index: number, count: number, isHovered?: boolean) {
   // First card in the list sits on top of the pile.
-  return count - index;
+  const baseZ = count - index;
+  return isHovered ? baseZ + 50 : baseZ;
 }
 
 function StackCard({
@@ -68,6 +69,7 @@ function StackCard({
   fan,
   progress,
   compactStagger,
+  isHovered,
   children,
 }: {
   index: number;
@@ -76,6 +78,7 @@ function StackCard({
   fan: Offset;
   progress: MotionValue<number>;
   compactStagger?: boolean;
+  isHovered?: boolean;
   children: React.ReactNode;
 }) {
   const dx = (offset?.dx ?? 0) + fan.dx;
@@ -92,7 +95,7 @@ function StackCard({
 
   return (
     <motion.div
-      style={{ x, y, rotate, scale, zIndex: stackZIndex(index, count) }}
+      style={{ x, y, rotate, scale, zIndex: stackZIndex(index, count, isHovered) }}
       className="relative"
     >
       {children}
@@ -216,6 +219,7 @@ export default function OurWork({
                 fan={fanOffsets[index] ?? { dx: 0, dy: 0, rotate: 0 }}
                 progress={progress}
                 compactStagger={isMobile}
+                isHovered={hovered === index}
               >
                 <PortfolioCard
                   name={project.name}
