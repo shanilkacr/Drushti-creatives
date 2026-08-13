@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import Container from "@/components/Container";
 import PortfolioCard from "@/components/PortfolioCard";
 
 export type WorkItem = {
@@ -184,59 +185,61 @@ export default function OurWork({
       ref={sectionRef}
       className="relative w-screen max-w-[100vw] ml-[calc(50%-50vw)] bg-cream pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden"
     >
-      {/* Centered Header & Stack Anchor */}
-      <div className="mb-16 flex flex-col items-center justify-center px-6 text-center sm:px-8 md:mb-20 lg:px-12">
-        {header}
+      <Container>
+        {/* Centered Header & Stack Anchor */}
+        <div className="mb-16 flex flex-col items-center justify-center text-center md:mb-20">
+          {header}
 
-        {/* Invisible anchor where fanned stack forms before unstacking */}
+          {/* Invisible anchor where fanned stack forms before unstacking */}
+          {hasItems && (
+            <div
+              ref={anchorRef}
+              className="pointer-events-none mt-10 h-[200px] w-40 opacity-0 sm:mt-12 sm:h-[280px] sm:w-48 md:mt-14 md:h-[340px] md:w-64"
+              aria-hidden
+            />
+          )}
+        </div>
+
         {hasItems && (
           <div
-            ref={anchorRef}
-            className="pointer-events-none mt-10 h-[200px] w-40 opacity-0 sm:mt-12 sm:h-[280px] sm:w-48 md:mt-14 md:h-[340px] md:w-64"
-            aria-hidden
-          />
-        )}
-      </div>
-
-      {hasItems && (
-        <div
-          ref={gridRef}
-          className={`relative grid gap-3 px-6 transition-opacity duration-150 sm:grid-cols-2 sm:px-8 md:gap-4 lg:grid-cols-3 lg:px-12 ${
-            layoutReady ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {items.map((project, index) => (
-            <div
-              key={`${serviceId}-${project.name}`}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-            >
-              <StackCard
-                index={index}
-                count={items.length}
-                offset={offsets ? offsets[index] : null}
-                fan={fanOffsets[index] ?? { dx: 0, dy: 0, rotate: 0 }}
-                progress={progress}
-                compactStagger={isMobile}
-                isHovered={hovered === index}
+            ref={gridRef}
+            className={`relative grid gap-3 transition-opacity duration-150 sm:grid-cols-2 md:gap-4 lg:grid-cols-3 ${
+              layoutReady ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {items.map((project, index) => (
+              <div
+                key={`${serviceId}-${project.name}`}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
               >
-                <PortfolioCard
-                  name={project.name}
-                  client={project.client}
-                  image={project.image}
-                  href={project.href}
+                <StackCard
+                  index={index}
+                  count={items.length}
+                  offset={offsets ? offsets[index] : null}
+                  fan={fanOffsets[index] ?? { dx: 0, dy: 0, rotate: 0 }}
+                  progress={progress}
+                  compactStagger={isMobile}
                   isHovered={hovered === index}
-                  isDimmed={hovered !== null && hovered !== index}
-                  onHover={() => setHovered(index)}
-                  onLeave={() => setHovered(null)}
-                  borderless
-                />
-              </StackCard>
-            </div>
-          ))}
-        </div>
-      )}
+                >
+                  <PortfolioCard
+                    name={project.name}
+                    client={project.client}
+                    image={project.image}
+                    href={project.href}
+                    isHovered={hovered === index}
+                    isDimmed={hovered !== null && hovered !== index}
+                    onHover={() => setHovered(index)}
+                    onLeave={() => setHovered(null)}
+                    borderless
+                  />
+                </StackCard>
+              </div>
+            ))}
+          </div>
+        )}
+      </Container>
     </section>
   );
 }

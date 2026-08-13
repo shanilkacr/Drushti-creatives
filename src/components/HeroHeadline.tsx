@@ -5,7 +5,7 @@ import PillButton from "@/components/PillButton";
 export function HeroHeadline() {
   return (
     <>
-      <h1 className="font-heading text-heading-hero-half uppercase leading-[0.88] tracking-tighter text-white">
+      <h1 className="font-heading text-5xl sm:text-heading-hero-half uppercase leading-[0.88] tracking-tighter text-white">
         <span className="block">Your people,</span>
         <span className="block">Connected through</span>
         <span className="inline-flex items-baseline justify-center">
