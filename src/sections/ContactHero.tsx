@@ -19,7 +19,7 @@ export default function ContactHero() {
 
   return (
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden bg-[#0B1424] px-6 text-center text-white">
-      <h1 className="flex flex-wrap items-baseline justify-center gap-x-5 text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl">
+      <h1 className="flex flex-wrap items-baseline justify-center gap-x-5 font-heading text-heading-hero-half font-extrabold tracking-tight">
         <span className="text-white">Say</span>
         <span className="relative inline-flex h-[1.15em] min-w-[6ch] items-center justify-start overflow-hidden align-baseline">
           <AnimatePresence mode="wait">

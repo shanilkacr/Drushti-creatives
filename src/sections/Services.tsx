@@ -163,9 +163,30 @@ export default function Services() {
                           <p className="mt-4 max-w-xl text-sm text-ink/70 sm:text-base">{cat.description}</p>
                           <div className="mt-5 flex flex-wrap gap-2">
                             {cat.tags.map((tag) => (
-                              <Tag key={tag}>{tag}</Tag>
+                              <Tag
+                                key={tag}
+                                className="!h-7 !px-2.5 !text-[10px] sm:!h-9 sm:!px-3 sm:!text-xs"
+                              >
+                                {tag}
+                              </Tag>
                             ))}
                           </div>
+
+                          {/* Below lg: the category's own image sits inside its
+                              card, after the tags — the shared image column
+                              (further down) only kicks in at lg. */}
+                          {"image" in cat && cat.image ? (
+                            <div className="mx-auto mt-6 flex size-40 items-center justify-center sm:size-56 lg:hidden">
+                              <Image
+                                src={cat.image}
+                                alt={cat.name}
+                                width={SERVICE_ICON_SIZE}
+                                height={SERVICE_ICON_SIZE}
+                                sizes="(max-width: 640px) 160px, 224px"
+                                className={`h-full w-full object-contain ${cat.color}`}
+                              />
+                            </div>
+                          ) : null}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -179,7 +200,7 @@ export default function Services() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.7, ease: EASE }}
-              className="order-1 mx-auto flex size-[180px] items-center justify-center sm:size-[280px] lg:order-2 lg:size-[500px]"
+              className="order-1 mx-auto hidden items-center justify-center lg:order-2 lg:flex lg:size-[500px]"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -196,7 +217,7 @@ export default function Services() {
                       alt={activeCategory.name}
                       width={SERVICE_ICON_SIZE}
                       height={SERVICE_ICON_SIZE}
-                      sizes="(max-width: 640px) 180px, (max-width: 1024px) 280px, 500px"
+                      sizes="500px"
                       className="h-full w-full object-contain"
                     />
                   ) : (

@@ -17,6 +17,10 @@ export type WorkItem = {
 const UNSTACK_DISTANCE = { mobile: 220, desktop: 420 } as const;
 const MOBILE_MQ = "(max-width: 639px)";
 
+// Mobile's single-column grid makes a long work list feel endless — cap it
+// to a tidy 9 cards there; desktop/tablet's 2-3 column grid keeps the full set.
+const MOBILE_MAX_CARDS = 9;
+
 type Offset = { dx: number; dy: number; rotate: number };
 
 function clamp(value: number, min: number, max: number) {
@@ -38,14 +42,19 @@ function useStackScrollConfig() {
   return { isMobile, unstackDistance };
 }
 
-/** Fan spread scales with card width so the stack looks tight at any breakpoint. */
-function buildFanOffsets(count: number, cardWidth: number): Offset[] {
+/** Fan spread scales with card width so the stack looks tight at any breakpoint.
+ *  On mobile the grid is single-column (card width ≈ viewport width), so the
+ *  spread is capped much tighter there — otherwise the fanned corners run off
+ *  both edges of the screen. */
+function buildFanOffsets(count: number, cardWidth: number, isMobile: boolean): Offset[] {
   if (count === 0) return [];
   if (count === 1) return [{ dx: 0, dy: 0, rotate: 0 }];
 
   const center = (count - 1) / 2;
-  const maxSpread = clamp(cardWidth * 0.85, 72, 200);
-  const maxRotate = 12;
+  const maxSpread = isMobile
+    ? clamp(cardWidth * 0.18, 24, 56)
+    : clamp(cardWidth * 0.85, 72, 200);
+  const maxRotate = isMobile ? 7 : 12;
 
   return Array.from({ length: count }, (_, i) => {
     const t = center === 0 ? 0 : (i - center) / center;
@@ -89,10 +98,15 @@ function StackCard({
   const cap = compactStagger ? 0.15 : 0.25;
   const start = Math.min(index * step, cap);
 
+  // Mobile cards are near-full-viewport-width, so the stacked (pre-unstack)
+  // state needs to shrink a lot more than desktop's to avoid the deck's
+  // corners poking past the screen edges.
+  const stackedScale = compactStagger ? 0.62 : 0.92;
+
   const x = useTransform(progress, [start, 1], [dx, 0]);
   const y = useTransform(progress, [start, 1], [dy, 0]);
   const rotate = useTransform(progress, [start, 1], [fan.rotate, 0]);
-  const scale = useTransform(progress, [start, 1], [0.92, 1]);
+  const scale = useTransform(progress, [start, 1], [stackedScale, 1]);
 
   return (
     <motion.div
@@ -122,11 +136,12 @@ export default function OurWork({
   const [cardWidth, setCardWidth] = useState(0);
   const { isMobile, unstackDistance } = useStackScrollConfig();
 
-  const hasItems = items.length > 0;
+  const visibleItems = isMobile ? items.slice(0, MOBILE_MAX_CARDS) : items;
+  const hasItems = visibleItems.length > 0;
 
   const fanOffsets = useMemo(
-    () => buildFanOffsets(items.length, cardWidth),
-    [items.length, cardWidth],
+    () => buildFanOffsets(visibleItems.length, cardWidth, isMobile),
+    [visibleItems.length, cardWidth, isMobile],
   );
 
   // Measure grid card positions and card width — re-run on resize / column changes.
@@ -167,7 +182,7 @@ export default function OurWork({
       window.removeEventListener("resize", measure);
       ro?.disconnect();
     };
-  }, [hasItems, items.length, serviceId]);
+  }, [hasItems, visibleItems.length, serviceId]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -186,15 +201,19 @@ export default function OurWork({
       className="relative w-screen max-w-[100vw] ml-[calc(50%-50vw)] bg-cream pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden"
     >
       <Container>
-        {/* Centered Header & Stack Anchor */}
-        <div className="mb-16 flex flex-col items-center justify-center text-center md:mb-20">
+        {/* Centered Header & Stack Anchor. `relative` + the anchor being
+            `absolute` keeps the anchor's size out of normal flow — so it
+            controls only where the fanned deck starts (close to the text),
+            without also inflating the gap to the grid's real, unstacked
+            position (which is governed purely by this wrapper's `mb-*`). */}
+        <div className="relative mb-8 flex flex-col items-center justify-center text-center sm:mb-16 md:mb-20">
           {header}
 
           {/* Invisible anchor where fanned stack forms before unstacking */}
           {hasItems && (
             <div
               ref={anchorRef}
-              className="pointer-events-none mt-10 h-[200px] w-40 opacity-0 sm:mt-12 sm:h-[280px] sm:w-48 md:mt-14 md:h-[340px] md:w-64"
+              className="pointer-events-none absolute left-1/2 top-full h-2 w-40 -translate-x-1/2 mt-16 opacity-0 sm:mt-12 sm:h-[280px] sm:w-48 md:mt-14 md:h-[340px] md:w-64"
               aria-hidden
             />
           )}
@@ -207,7 +226,7 @@ export default function OurWork({
               layoutReady ? "opacity-100" : "opacity-0"
             }`}
           >
-            {items.map((project, index) => (
+            {visibleItems.map((project, index) => (
               <div
                 key={`${serviceId}-${project.name}`}
                 ref={(el) => {
@@ -216,7 +235,7 @@ export default function OurWork({
               >
                 <StackCard
                   index={index}
-                  count={items.length}
+                  count={visibleItems.length}
                   offset={offsets ? offsets[index] : null}
                   fan={fanOffsets[index] ?? { dx: 0, dy: 0, rotate: 0 }}
                   progress={progress}

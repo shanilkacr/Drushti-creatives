@@ -37,7 +37,7 @@ export default function ServiceDetailView({
                 serviceId={id}
                 items={workItems}
                 header={
-                    <div className="mb-[10vh] max-w-3xl text-center mx-auto flex flex-col items-center">
+                    <div className="mb-12 max-w-3xl text-center mx-auto flex flex-col items-center sm:mb-[10vh]">
                         <h1 className={`font-heading text-[clamp(2.25rem,4.5vw,3.5rem)] font-normal leading-[1.08] tracking-tight ${details.titleColorClass}`}>
                             {details.title}
                         </h1>

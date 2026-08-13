@@ -74,14 +74,14 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
       className="relative bg-white"
       style={{ height: `${count * perProjectVh}vh` }}
     >
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24 sm:py-32">
+      <div className="sticky top-0 flex h-screen flex-col justify-start overflow-hidden py-14 sm:justify-center sm:py-32">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink sm:mb-6"
+            className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.32em] text-ink sm:mb-6"
           >
             <Burst className="h-4 w-4 text-orange" />
             Featured work
@@ -92,7 +92,7 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
               const isActive = i === active;
               const logoSrc = project.clientLogoFocus || project.clientLogoSquare;
               return (
-                <div key={project.slug} className="border-b border-ink/10 py-2 first:pt-0 sm:py-3">
+                <div key={project.slug} className="border-b border-ink/10 py-1.5 first:pt-0 sm:py-3">
                   <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                     <div className="grid min-w-0 flex-1 grid-cols-1 gap-x-4 sm:grid-cols-[auto_1fr]">
                       <span
@@ -133,10 +133,10 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
                         className="overflow-hidden"
                       >
                         {/* Mobile: image first, then text. Desktop: text left, image right */}
-                        <div className="mt-3 flex flex-col gap-4 sm:mt-4 sm:grid sm:grid-cols-[3fr_2fr] sm:items-start sm:gap-6">
+                        <div className="mt-2 flex flex-col gap-3 sm:mt-4 sm:grid sm:grid-cols-[3fr_2fr] sm:items-start sm:gap-6">
                           {/* Image — shown first on mobile (order-1), second on desktop (sm:order-2) */}
                           <div className="order-1 flex min-w-0 w-full sm:order-2">
-                            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-ink/10 bg-white sm:rounded-3xl">
+                            <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl border border-ink/10 bg-white sm:aspect-[16/10] sm:rounded-3xl">
                               <Image
                                 src={project.featuredImage}
                                 alt={project.name}
@@ -153,7 +153,7 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
                             </span>
                             <div className="min-w-0 sm:col-start-2">
                               {logoSrc && (
-                                <div className="mb-2 block w-fit">
+                                <div className="mb-1.5 block w-fit sm:mb-2">
                                   <Image
                                     src={logoSrc}
                                     alt={project.client}
@@ -167,9 +167,9 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
                                   />
                                 </div>
                               )}
-                              <p className="text-xs text-ink/70 sm:text-sm">{project.challenge}</p>
+                              <p className="line-clamp-3 text-xs text-ink/70 sm:line-clamp-none sm:text-sm">{project.challenge}</p>
 
-                              <ul className="mt-3 space-y-1.5 sm:mt-4 sm:space-y-2">
+                              <ul className="mt-2 space-y-1 sm:mt-4 sm:space-y-2">
                                 {project.results.map((result, ri) => (
                                   <li
                                     key={ri}
@@ -185,7 +185,7 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
                                 ))}
                               </ul>
 
-                              <PillButton href={project.href} className="mt-3 px-5 py-2 text-xs sm:mt-4 sm:px-6 sm:py-2.5 sm:text-sm">
+                              <PillButton href={project.href} className="mt-2 px-5 py-2 text-xs sm:mt-4 sm:px-6 sm:py-2.5 sm:text-sm">
                                 View more
                               </PillButton>
                             </div>

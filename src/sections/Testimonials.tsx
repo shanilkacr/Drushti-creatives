@@ -87,18 +87,18 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-light-blue py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-light-blue py-10 sm:py-20 lg:py-32">
       <Container>
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
+        <div className="flex flex-col gap-6 sm:gap-12 lg:flex-row lg:gap-16">
           {/* Left column — heading, promise, Clutch rating */}
           <div className="shrink-0 lg:w-[340px]">
             <div className="flex flex-col items-start lg:sticky lg:top-32">
-              <h2 className="mb-6 font-heading text-heading-4xl leading-heading text-white sm:text-heading-5xl">
+              <h2 className="mb-3 font-heading text-heading-4xl leading-heading text-white sm:mb-6 sm:text-heading-5xl">
                 Kind words from
                 <br />
                 our clients
               </h2>
-              <p className="mb-12 max-w-sm text-sm text-white/80 sm:text-base">
+              <p className="mb-6 max-w-sm text-sm text-white/80 sm:mb-12 sm:text-base">
                 We aren&apos;t just execution partners—we are strategic collaborators. If you&apos;re not convinced, check out our verified
                 testimonials from around the world about working with us.
               </p>
@@ -135,7 +135,7 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
                         borderRadius: "1.5rem",
                         overflow: "hidden",
                       }}
-                      className="flex min-h-[440px] flex-col justify-between p-12"
+                      className="flex min-h-[260px] flex-col justify-between p-6 sm:min-h-[440px] sm:p-12"
                     >
                       <motion.p
                         initial={false}
@@ -143,12 +143,12 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
                           color: isActive ? "rgba(var(--ink) / 0.8)" : "rgba(255, 255, 255, 0.9)",
                         }}
                         transition={{ duration: 0.5, ease: EASE }}
-                        className="text-sm leading-relaxed sm:text-base"
+                        className="text-sm leading-snug sm:text-base sm:leading-relaxed"
                       >
                         {t.text}
                       </motion.p>
 
-                      <div className="mt-8 flex items-center gap-6">
+                      <div className="mt-4 flex items-center gap-4 sm:mt-8 sm:gap-6">
                         <CompanyLogo company={t.company} clients={clients} />
 
                         <div className="min-w-0 flex-1">
@@ -180,7 +180,7 @@ export default function Testimonials({ clients }: { clients: Client[] }) {
             </div>
 
             {/* Prev / next under the cards */}
-            <div className="mt-10 flex gap-3">
+            <div className="mt-4 flex gap-3 sm:mt-10">
               <button
                 onClick={() => setIndex((prev) => Math.max(prev - 1, 0))}
                 disabled={index === 0}
