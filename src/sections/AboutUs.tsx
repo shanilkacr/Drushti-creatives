@@ -87,7 +87,7 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
                 opacity: titleOpacity,
                 scale: titleScale,
               }}
-              className="pointer-events-none text-center font-heading text-heading-hero-half leading-[0.88] tracking-tighter text-white"
+              className="pointer-events-none text-center font-heading text-[clamp(2.4rem,10.5vw,3.4rem)] sm:text-heading-hero-half leading-[0.88] tracking-tighter text-white"
             >
               More strategy.<br />More connection.<br />
             </motion.h2>
