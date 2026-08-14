@@ -10,7 +10,10 @@ export function ExtendedLetterO({ className }: { className?: string }) {
         className,
       )}
       style={{
-        width: "2.1em",
+        // Scales down on narrow phones (where the plain `em` value alone
+        // could still be wide enough to wrap "Your story" onto its own
+        // line) while settling back to the original 2.1em from ~380px up.
+        width: "clamp(1.15em, 6vw + 0.8em, 2.1em)",
         height: "0.75cap",
       }}
     />

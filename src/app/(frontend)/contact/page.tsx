@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type FormEvent, type ReactElement, type SVGProps } from "react";
+import { useState, useEffect, useRef, type FormEvent, type ReactElement, type SVGProps } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import PillButton from "@/components/PillButton";
 
@@ -74,21 +74,33 @@ const IconAt = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// Desktop positions assume the wide hero (heading sits in a narrow central
+// column, plenty of side room). On mobile the heading + subtext stack up
+// and take over roughly the 30–65% vertical band edge-to-edge, so the
+// `mobileTop`/`mobileLeft` overrides below instead push all six icons into
+// a top row and a bottom row — clear of the typography on any phone.
+// Mobile arranges the three top icons along an upward arch (center pulled
+// closest to the top edge, outer two dropping away from it) and the three
+// bottom icons along a mirrored, downward arch — a "smile" top, "frown"
+// bottom — rather than two flat rows, while staying clear of the nav bar
+// above and the heading/subtext in between.
 const FLOATING_ICONS = [
   // Left Side
-  { Icon: IconMail, top: "15%", left: "18%", size: 42, duration: 9, depth: 26, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#E0B624", btnVariant: "dark" },
-  { Icon: IconSend, top: "45%", left: "12%", size: 34, duration: 7.5, depth: 34, label: "Send Message", href: "#form", color: "#257FC2", btnVariant: "light" },
-  { Icon: IconPhone, top: "75%", left: "15%", size: 40, duration: 8.5, depth: 22, label: "Call Us", href: "tel:+94768519161", color: "#77C26B", btnVariant: "light" },
+  { Icon: IconMail, top: "15%", left: "18%", mobileTop: "26%", mobileLeft: "18%", size: 42, duration: 9, depth: 26, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#E0B624", btnVariant: "dark" },
+  { Icon: IconSend, top: "45%", left: "12%", mobileTop: "26%", mobileLeft: "82%", size: 34, duration: 7.5, depth: 34, label: "Send Message", href: "#form", color: "#257FC2", btnVariant: "light" },
+  { Icon: IconPhone, top: "75%", left: "15%", mobileTop: "84%", mobileLeft: "80%", size: 40, duration: 8.5, depth: 22, label: "Call Us", href: "tel:+94768519161", color: "#77C26B", btnVariant: "light" },
   // Right Side
-  { Icon: IconChatDots, top: "15%", left: "82%", size: 50, duration: 10.5, depth: -30, label: "Chat Now", href: "https://wa.link/62g3lq", color: "#77C26B", btnVariant: "light" },
-  { Icon: IconAt, top: "45%", left: "88%", size: 36, duration: 9.5, depth: -28, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#DC5C26", btnVariant: "light" },
-  { Icon: IconPin, top: "75%", left: "85%", size: 38, duration: 11, depth: -20, label: "View Map", href: "https://share.google/f3G6G1pm4Yp41hSnT", color: "#257FC2", btnVariant: "light" },
+  { Icon: IconChatDots, top: "15%", left: "82%", mobileTop: "20%", mobileLeft: "50%", size: 50, duration: 10.5, depth: -30, label: "Chat Now", href: "https://wa.link/62g3lq", color: "#77C26B", btnVariant: "light" },
+  { Icon: IconAt, top: "45%", left: "88%", mobileTop: "84%", mobileLeft: "20%", size: 36, duration: 9.5, depth: -28, label: "Send Email", href: "mailto:collabs@drushticreatives.com", color: "#DC5C26", btnVariant: "light" },
+  { Icon: IconPin, top: "75%", left: "85%", mobileTop: "94%", mobileLeft: "50%", size: 38, duration: 11, depth: -20, label: "View Map", href: "https://share.google/f3G6G1pm4Yp41hSnT", color: "#257FC2", btnVariant: "light" },
 ] as const;
 
 function FloatingIcon({
   Icon,
   top,
   left,
+  mobileTop,
+  mobileLeft,
   size,
   duration,
   depth,
@@ -103,6 +115,8 @@ function FloatingIcon({
   Icon: (p: SVGProps<SVGSVGElement>) => ReactElement;
   top: string;
   left: string;
+  mobileTop: string;
+  mobileLeft: string;
   size: number;
   duration: number;
   depth: number;
@@ -115,41 +129,77 @@ function FloatingIcon({
   btnVariant: "light" | "dark";
 }) {
   const [hovered, setHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const ix = useTransform(pointerX, (v) => v * depth);
   const iy = useTransform(pointerY, (v) => v * depth);
-  const boxSize = hovered ? 220 : 120;
+
+  // Below `lg` there's no hover to expand into, and the desktop box/icon
+  // sizes (up to 120px, circles up to 74px) are too big to spread six of
+  // these across a phone-width hero without clipping/overlap — so mobile
+  // gets its own smaller, fixed square size and a smaller icon circle.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const boxSize = isMobile ? 68 : hovered ? 220 : 120;
+  const circleSize = isMobile ? 42 : size + 24;
+  const iconSize = isMobile ? 20 : size;
+
+  const targetTop = isMobile ? mobileTop : top;
+  const targetLeft = isMobile ? mobileLeft : left;
+
+  // Clamp the (percentage) position so the box — centered on `left`/`top`
+  // via the -translate-1/2 below — never runs past the section's edges,
+  // regardless of viewport width or which size tier `boxSize` is in.
+  const halfBox = boxSize / 2;
+  const clampedLeft = `clamp(${halfBox}px, ${targetLeft}, calc(100% - ${halfBox}px))`;
+  const clampedTop = `clamp(${halfBox}px, ${targetTop}, calc(100% - ${halfBox}px))`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.6 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6, delay, ease: EASE }}
-      className="pointer-events-auto absolute hidden -translate-x-1/2 -translate-y-1/2 lg:block cursor-pointer z-20"
-      style={{ top, left }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    // Plain (non-motion) wrapper does the centering translate — Framer Motion
+    // writes its own `transform` inline style onto anything it animates
+    // (here: scale, on the motion.div below), which would silently clobber
+    // Tailwind's `-translate-x/y-1/2` utility classes if they lived on the
+    // same element, since an inline style always wins over the stylesheet.
+    <div className="absolute -translate-x-1/2 -translate-y-1/2 z-50" style={{ top: clampedTop, left: clampedLeft }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay, ease: EASE }}
+        className="pointer-events-auto cursor-pointer z-20"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
       <motion.div style={prefersReducedMotion ? undefined : { x: ix, y: iy }} className="h-full w-full">
         <motion.div
           animate={{ width: boxSize, height: boxSize }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}
           style={{ backgroundColor: color }}
-          className="flex flex-col items-center justify-center rounded-[2rem] p-4 select-none transition-colors"
+          className="flex flex-col items-center justify-center rounded-[1.25rem] p-2 select-none transition-colors sm:rounded-[2rem] sm:p-4"
         >
-          <motion.div
+          {/* The tappable circle is its own link (rather than making the
+              whole expanding box an <a>) so it never nests inside the
+              hover-revealed PillButton's own <a> below. */}
+          <motion.a
+            href={href}
+            aria-label={label}
             animate={prefersReducedMotion || hovered ? undefined : { y: [0, -6, 0] }}
             transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
-            style={{ width: size + 24, height: size + 24, backgroundColor: color }}
+            style={{ width: circleSize, height: circleSize, backgroundColor: color }}
             className="flex items-center justify-center rounded-full border border-white text-white shrink-0"
           >
-            <div style={{ width: size, height: size }}>
+            <div style={{ width: iconSize, height: iconSize }}>
               <Icon className="h-full w-full" />
             </div>
-          </motion.div>
+          </motion.a>
 
           <AnimatePresence>
-            {hovered && (
+            {hovered && !isMobile && (
               <motion.div
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -169,7 +219,8 @@ function FloatingIcon({
           </AnimatePresence>
         </motion.div>
       </motion.div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -207,14 +258,16 @@ export default function ContactPage() {
       <section
         ref={heroRef}
         onMouseMove={handlePointer}
-        className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-blue px-6 text-center pt-24"
+        className="relative flex min-h-[90vh] items-center justify-center overflow-hidden bg-blue px-6 text-center pt-32 sm:pt-24"
       >
-        {FLOATING_ICONS.map(({ Icon, top, left, size, duration, depth, label, href, color, btnVariant }, i) => (
+        {FLOATING_ICONS.map(({ Icon, top, left, mobileTop, mobileLeft, size, duration, depth, label, href, color, btnVariant }, i) => (
           <FloatingIcon
             key={i}
             Icon={Icon}
             top={top}
             left={left}
+            mobileTop={mobileTop}
+            mobileLeft={mobileLeft}
             size={size}
             duration={duration}
             depth={depth}
