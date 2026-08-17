@@ -73,7 +73,7 @@ function ServiceIcon({
   // Expand to a generous ceiling so each tag grows to its natural text width.
   const labelWidth = useTransform(reveal, [0, 1], [0, 2400]);
   const labelGap = useTransform(reveal, [0, 1], [0, 6]);
-  const iconScale = useTransform(reveal, [0, 1], [6, 1]);
+  const iconScale = useTransform(reveal, [0, 1], [4, 1]);
 
   return (
     <motion.button
@@ -111,7 +111,7 @@ function ServiceIcon({
             marginLeft: labelGap,
           }}
           className={clsx(
-            "inline-block overflow-hidden whitespace-nowrap text-base uppercase tracking-wide transition-colors duration-200 sm:text-lg",
+            "inline-block overflow-hidden whitespace-nowrap text-sm uppercase tracking-wide transition-colors duration-200 sm:text-base",
             selected ? "text-blue" : "text-white",
           )}
         >
