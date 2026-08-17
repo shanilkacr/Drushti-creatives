@@ -199,7 +199,7 @@ export default function ServicesIntro({
     >
       <div className="w-full bg-blue px-6 pb-6 pt-[18vh] sm:px-8 sm:pb-8 sm:pt-[20vh]">
         <div className="flex w-full flex-col items-center text-center">
-          <h1 className="font-heading text-heading-hero-half font-bold leading-[0.85] tracking-tight text-white">
+          <h1 className="font-heading text-[clamp(2.4rem,10.5vw,3.4rem)] sm:text-heading-hero-half font-bold leading-[0.85] tracking-tight text-white">
             {heading}
           </h1>
 

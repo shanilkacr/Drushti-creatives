@@ -286,7 +286,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="font-heading text-[clamp(2.5rem,7.5vw,7.5rem)] font-normal leading-[0.95] text-white tracking-tight"
+            className="font-heading text-[clamp(2.4rem,10.5vw,3.4rem)] sm:text-[clamp(2.5rem,7.5vw,7.5rem)] font-normal leading-[0.95] text-white tracking-tight"
           >
             Want to connect?
           </motion.h1>

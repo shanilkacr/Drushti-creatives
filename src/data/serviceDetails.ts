@@ -163,6 +163,7 @@ export const SERVICES_DATA: Record<string, ServiceDetails> = {
       "Better First Impressions: Your website is often the first place a customer meets you; we make sure it’s a great meeting.",
       "Easy for Customers: We remove the confusion so people can buy from you or book your services easily.",
       "Credibility: A modern, fast website shows that your business is up-to-date and reliable.",
+      "Responsive Design: We ensure your website looks perfect and functions seamlessly on all devices, from mobile phones to desktop computers.",
     ],
     process: [
       {

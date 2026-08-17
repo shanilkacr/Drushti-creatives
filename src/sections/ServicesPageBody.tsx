@@ -151,7 +151,7 @@ function ServicesHeroIntro() {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, ease: EASE }}
-              className="w-full font-heading text-heading-hero-half font-bold leading-[0.88] tracking-tight text-white sm:max-w-none"
+              className="w-full font-heading text-[clamp(2.4rem,10.5vw,3.4rem)] sm:text-heading-hero-half font-bold leading-[0.88] tracking-tight text-white sm:max-w-none"
             >
               <span className="block sm:whitespace-nowrap">
                 Clear <HeadlinePill variant="green">solutions</HeadlinePill>

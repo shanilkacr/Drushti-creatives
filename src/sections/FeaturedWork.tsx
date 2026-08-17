@@ -64,8 +64,10 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
 
   if (projects.length === 0) return null;
 
-  // More scroll dwell on mobile so content has time to be read
-  const perProjectVh = isMobile ? 80 : 55;
+  // More scroll dwell on mobile so content has time to be read, and enough
+  // that an ordinary swipe eases from one project to the next rather than
+  // jumping straight past it — desktop is untouched.
+  const perProjectVh = isMobile ? 95 : 55;
 
   return (
     <section

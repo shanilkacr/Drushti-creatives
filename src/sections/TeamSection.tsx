@@ -154,7 +154,7 @@ export default function TeamSection({ members }: { members: TeamMember[] }) {
       {/* Below md: heading at top, members in a 2-up grid */}
       <div className="px-6 py-24 sm:py-32 md:hidden">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-6 text-center">
-          <h1 className="max-w-xs font-heading text-heading-hero-half leading-heading-display tracking-tight text-white">
+          <h1 className="max-w-xs font-heading text-[clamp(2.4rem,10.5vw,3.4rem)] sm:text-heading-hero-half leading-heading-display tracking-tight text-white">
             We build the voice your vision deserves.
           </h1>
           <motion.div
