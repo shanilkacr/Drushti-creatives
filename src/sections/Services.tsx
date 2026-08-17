@@ -113,8 +113,10 @@ export default function Services() {
       }}
       className="relative bg-white"
       // Controls "how fast" we move through categories:
-      // smaller height => less scroll distance => faster snapping.
-      style={{ height: `${CATEGORIES.length * 55}vh` }}
+      // smaller height => less scroll distance => faster snapping. Kept
+      // generous so each category has room to sit still and be read before
+      // the next scroll moves on, rather than flicking past in a hurry.
+      style={{ height: `${CATEGORIES.length * 95}vh` }}
     >
       <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-16 sm:py-20">
         <Container>

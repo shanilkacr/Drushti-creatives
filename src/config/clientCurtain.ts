@@ -7,6 +7,12 @@
 /** Total scroll track height for the AboutUs pinned section (vh). */
 export const ABOUT_SCROLL_VH = 220;
 
+/** Same, but for mobile — kept short enough that the title finishes
+ *  appearing within roughly one scroll gesture and then holds until the
+ *  next scroll carries the user into the following section, rather than
+ *  requiring several scrolls the way the (much taller) desktop track does. */
+export const ABOUT_SCROLL_VH_MOBILE = 130;
+
 /** Scroll progress where the curtain shape fully closes. */
 export const SHAPE_CLOSED_AT = 0.4;
 
