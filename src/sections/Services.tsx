@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   AnimatePresence,
@@ -92,6 +92,20 @@ export default function Services() {
   const ActiveShape = CATEGORIES[active].Shape;
   const activeCategory = CATEGORIES[active];
 
+  // Mobile (especially Android, where a single fling can cover a lot more
+  // virtual scroll distance once Lenis smooths it) gets extra dwell per
+  // category so one scroll/swipe lands on the next category instead of
+  // blowing past it — desktop's shorter track is unchanged.
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const perCategoryVh = isMobile ? 140 : 95;
+
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
     offset: ["start start", "end end"],
@@ -116,9 +130,9 @@ export default function Services() {
       // smaller height => less scroll distance => faster snapping. Kept
       // generous so each category has room to sit still and be read before
       // the next scroll moves on, rather than flicking past in a hurry.
-      style={{ height: `${CATEGORIES.length * 95}vh` }}
+      style={{ height: `${CATEGORIES.length * perCategoryVh}dvh` }}
     >
-      <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden py-16 sm:py-20">
+      <div className="sticky top-0 flex min-h-dvh flex-col justify-center overflow-hidden py-16 sm:py-20">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 14 }}

@@ -9,6 +9,12 @@ import { EASE } from "@/lib/motion";
 
 type FloatingImageProps = FloatingImageConfig & {
   visible?: boolean;
+  /** Stops the idle float rAF loop (e.g. once the hero has scrolled out of
+   *  view) without unmounting — every floating image otherwise keeps writing
+   *  a transform every single frame for as long as the page is open, which
+   *  competes with scroll on weaker/Android devices for no visible benefit
+   *  once it's off-screen. */
+  paused?: boolean;
   animateEntrance?: "full" | "fade" | "none";
   entranceDelay?: number;
   onLoadingComplete?: () => void;
@@ -26,6 +32,7 @@ export function FloatingImage({
   className,
   linkClassName,
   visible = true,
+  paused = false,
   animateEntrance = "none",
   entranceDelay = 0,
   onLoadingComplete,
@@ -42,7 +49,7 @@ export function FloatingImage({
   }, [visible, loaded, animateEntrance]);
 
   useAnimationFrame((time) => {
-    if (!visible) return;
+    if (!visible || paused) return;
     const el = floatRef.current;
     if (!el) return;
     const t = time / 1000;

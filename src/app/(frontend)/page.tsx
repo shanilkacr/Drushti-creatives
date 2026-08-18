@@ -3,6 +3,7 @@ import { HeroHeadline } from "@/components/HeroHeadline";
 import { HeroImagePreloads } from "@/components/HeroImagePreloads";
 import Services from "@/sections/Services";
 import FeaturedWork from "@/sections/FeaturedWork";
+import ProjectsFan from "@/sections/ProjectsFan";
 import ClientAboutCurtain from "@/sections/ClientAboutCurtain";
 import WorkProcess from "@/sections/WorkProcess";
 import Testimonials from "@/sections/Testimonials";
@@ -34,6 +35,7 @@ export default async function Home() {
       <HeroLive floatingImages={floatingImages}>
         <HeroHeadline />
       </HeroLive>
+      <ProjectsFan projects={featuredProjects} />
       <ClientAboutCurtain clientLogos={clientLogos} />
       <Services />
       <WorkProcess />

@@ -29,6 +29,11 @@ interface Props {
   floatingImages: FloatingImageConfig[];
   loadPhase: HeroLoadPhase;
   onFocusSequenceComplete: () => void;
+  /** Whether the hero is currently in (or near) the viewport — false once
+   *  scrolled well past it, so the mouse-parallax and per-image float rAF
+   *  loops stop doing per-frame work they have no visible payoff for and
+   *  would otherwise keep competing with scroll indefinitely. */
+  active?: boolean;
 }
 
 function initialFocusStep(revealCount: number): number {
@@ -41,6 +46,7 @@ export function BackgroundLayer({
   floatingImages,
   loadPhase,
   onFocusSequenceComplete,
+  active = true,
 }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ targetX: 0.5, targetY: 0.5, x: 0.5, y: 0.5 });
@@ -104,7 +110,7 @@ export function BackgroundLayer({
   }, [containerRef]);
 
   useAnimationFrame(() => {
-    if (loadPhase === "shell") return;
+    if (loadPhase === "shell" || !active) return;
 
     const m = mouseRef.current;
     m.x += (m.targetX - m.x) * 0.08;
@@ -148,7 +154,7 @@ export function BackgroundLayer({
       className="pointer-events-none absolute z-0"
       style={{
         width: `${CANVAS_W_VW}vw`,
-        height: `${CANVAS_H_VH}vh`,
+        height: `${CANVAS_H_VH}dvh`,
         left: 0,
         top: 0,
         willChange: "transform",
@@ -190,6 +196,7 @@ export function BackgroundLayer({
                 {...img}
                 priority={isPriorityFocus || img.priority}
                 visible
+                paused={!active}
                 animateEntrance={img.inFocus ? "full" : "fade"}
                 entranceDelay={entranceDelay}
                 onLoadingComplete={

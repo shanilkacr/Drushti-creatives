@@ -95,9 +95,9 @@ export default function AboutUs({ scrollRef }: AboutUsProps) {
     <section
       ref={containerRef as RefObject<HTMLElement>}
       className="relative z-10"
-      style={{ height: `${scrollVh}vh` }}
+      style={{ height: `${scrollVh}dvh` }}
     >
-      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden">
+      <div className="sticky top-0 flex h-dvh w-full flex-col overflow-hidden">
 
         <motion.div
           ref={overlayOpacityRef}
