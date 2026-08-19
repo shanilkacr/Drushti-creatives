@@ -104,7 +104,7 @@ export default function Services() {
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-  const perCategoryVh = isMobile ? 140 : 95;
+  const perCategoryVh = isMobile ? 110 : 75;
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,

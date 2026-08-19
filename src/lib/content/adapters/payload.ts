@@ -84,7 +84,8 @@ function mapPortfolioDoc(doc: PortfolioDoc): Project {
       metric: result.metric ?? undefined,
       text: result.text ?? "",
     })),
-    href: projectHref(doc.slug),
+    href: doc.externalUrl?.trim() || projectHref(doc.slug),
+    isExternal: Boolean(doc.externalUrl?.trim()),
   };
 }
 

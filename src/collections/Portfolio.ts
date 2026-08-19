@@ -25,6 +25,15 @@ export const Portfolio: CollectionConfig = {
     },
     { name: "description", type: "textarea" },
     {
+      name: "externalUrl",
+      type: "text",
+      label: "External live URL (optional)",
+      admin: {
+        description:
+          "If set, the portfolio card links out to this URL (opens in a new tab) instead of the internal project detail page.",
+      },
+    },
+    {
       name: "serviceCategory",
       type: "select",
       options: SERVICE_CATEGORIES.map((value) => ({ label: value, value })),

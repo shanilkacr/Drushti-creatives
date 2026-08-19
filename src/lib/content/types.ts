@@ -63,6 +63,9 @@ export interface Project {
   };
   results: ProjectResult[];
   href: string;
+  /** True when `href` is an external live-site URL rather than the internal
+   *  `/portfolio/[slug]` detail page — cards should open it in a new tab. */
+  isExternal?: boolean;
 }
 
 export function projectHref(slug: string): string {

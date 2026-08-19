@@ -16,8 +16,8 @@ export function HeroHeadline() {
       </h1>
 
       <div className="pointer-events-auto mt-2">
-        <PillButton href="/portfolio" variant="light">
-          View our work
+        <PillButton href="/contact" variant="light">
+          Talk with us
         </PillButton>
       </div>
     </>

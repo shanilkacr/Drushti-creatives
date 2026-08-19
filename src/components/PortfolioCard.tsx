@@ -26,9 +26,13 @@ export default function PortfolioCard({
   onLeave,
   borderless = false,
 }: PortfolioCardProps) {
+  const isExternal = /^https?:\/\//.test(href);
+
   return (
     <Link
       href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       className={`group relative block aspect-[4/3] overflow-hidden rounded-3xl bg-white transition-opacity duration-300 outline-none ${

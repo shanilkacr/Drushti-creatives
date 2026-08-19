@@ -67,7 +67,7 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
   // More scroll dwell on mobile so content has time to be read, and enough
   // that an ordinary swipe eases from one project to the next rather than
   // jumping straight past it — desktop is untouched.
-  const perProjectVh = isMobile ? 95 : 55;
+  const perProjectVh = isMobile ? 75 : 55;
 
   return (
     <section
@@ -187,7 +187,12 @@ export default function FeaturedWork({ projects }: { projects: Project[] }) {
                                 ))}
                               </ul>
 
-                              <PillButton href={project.href} className="mt-2 px-5 py-2 text-xs sm:mt-4 sm:px-6 sm:py-2.5 sm:text-sm">
+                              <PillButton
+                                href={project.href}
+                                target={project.isExternal ? "_blank" : undefined}
+                                rel={project.isExternal ? "noopener noreferrer" : undefined}
+                                className="mt-2 px-5 py-2 text-xs sm:mt-4 sm:px-6 sm:py-2.5 sm:text-sm"
+                              >
                                 View more
                               </PillButton>
                             </div>

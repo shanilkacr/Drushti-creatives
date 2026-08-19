@@ -248,6 +248,10 @@ export interface Portfolio {
   slug: string;
   client?: (number | null) | Client;
   description?: string | null;
+  /**
+   * If set, the portfolio card links out to this URL (opens in a new tab) instead of the internal project detail page.
+   */
+  externalUrl?: string | null;
   serviceCategory?:
     | (
         | 'Social Media & Digital Marketing'
@@ -497,6 +501,7 @@ export interface PortfolioSelect<T extends boolean = true> {
   slug?: T;
   client?: T;
   description?: T;
+  externalUrl?: T;
   serviceCategory?: T;
   tags?: T;
   featuredImage?: T;
